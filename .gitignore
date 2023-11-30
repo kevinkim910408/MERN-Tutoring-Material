@@ -1,3 +1,7 @@
+# Config
 .env
 
+# Folders
 node_modules
+logs
+.history
