@@ -1,4 +1,4 @@
-const USERROUTE = require("../../services/users");
+const USERSERVICE = require("../../services/users");
 const { logger } = require("../../configs/winston");
 
 const getAllUsersController = async (req, res) => {
@@ -7,7 +7,7 @@ const getAllUsersController = async (req, res) => {
     #swagger.description = 'Get All Users from DB'
    */
   try {
-    const users = await USERROUTE.getAllUsers();
+    const users = await USERSERVICE.getAllUsers();
     if (!users) {
       logger.error(`getAllUsersController(): There is no users data. `);
       return;
@@ -47,7 +47,7 @@ const addUser = async (req, res) => {
     } 
    */
   try {
-    const msg = await USERROUTE.addUser(req.body);
+    const msg = await USERSERVICE.addUser(req.body);
     if (!msg) {
       logger.error(`addUser(): There is no msg data. `);
       return;
@@ -59,4 +59,41 @@ const addUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsersController, addUser };
+const login = async (req, res) => {
+  /**
+    #swagger.tags = ['Users']
+    #swagger.description = 'Login API'
+    #swagger.parameters[''] = {
+                    in: 'body',
+                    schema: {
+                        email: 'kevin@email.com',
+                        password: 'password',
+                    }
+    } 
+    #swagger.responses[201] = {
+                description: 'If Success',
+                schema: {
+                    message: 'Success!.'
+                }
+    } 
+    #swagger.responses[400] = {
+                description: 'If one of payload is empty',
+                schema: {
+                    message: "There is no payload on login() in user repository. "
+                }
+    } 
+   */
+  try {
+    const msg = await USERSERVICE.login(req.body);
+    if (!msg) {
+      logger.error(`addUser(): There is no msg data. `);
+      return;
+    }
+    res.send({ msg });
+  } catch (error) {
+    logger.error("login() has error" + error);
+    return;
+  }
+};
+
+module.exports = { getAllUsersController, addUser, login };

@@ -5,5 +5,6 @@ const userRoute = Router();
 
 userRoute.get("/getAllUsers", USERCONTROLLER.getAllUsersController);
 userRoute.post("/addUser", USERCONTROLLER.addUser);
+userRoute.post("/login", USERCONTROLLER.login);
 
 module.exports = userRoute;

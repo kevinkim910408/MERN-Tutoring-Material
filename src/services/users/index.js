@@ -25,4 +25,14 @@ const addUser = async (body) => {
   }
 };
 
-module.exports = { getAllUsers, addUser };
+const login = async (body) => {
+  try {
+    const msg = await USERDB.login(body);
+    return msg;
+  } catch (error) {
+    logger.error("login() has error" + error);
+    return;
+  }
+};
+
+module.exports = { getAllUsers, addUser, login };
