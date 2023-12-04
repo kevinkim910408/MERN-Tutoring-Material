@@ -1,27 +1,15 @@
 const USERSERVICE = require("../../services/users");
-const { logger } = require("../../configs/winston");
 
 const getAllUsersController = async (req, res) => {
   /**
     #swagger.tags = ['Users']
     #swagger.description = 'Get All Users from DB'
    */
-  try {
-    const users = await USERSERVICE.getAllUsers();
-    if (!users) {
-      logger.error(`getAllUsersController(): There is no users data. `);
-      return;
-    }
-    res.send({ users });
-  } catch (error) {
-    logger.error("getAllUsersController() has error" + error);
-    return;
-  } finally {
-    console.log("getAllUsersController() is called anyways");
-  }
+  const users = await USERSERVICE.getAllUsers();
+  res.send(users);
 };
 
-const addUser = async (req, res) => {
+const register = async (req, res) => {
   /**
     #swagger.tags = ['Users']
     #swagger.description = 'Add one User to DB'
@@ -42,21 +30,12 @@ const addUser = async (req, res) => {
     #swagger.responses[400] = {
                 description: 'If one of payload is empty',
                 schema: {
-                    message: "There is no payload on addUser() in user repository. "
+                    message: "There is no payload on register() in user repository. "
                 }
     } 
    */
-  try {
-    const msg = await USERSERVICE.addUser(req.body);
-    if (!msg) {
-      logger.error(`addUser(): There is no msg data. `);
-      return;
-    }
-    res.send({ msg });
-  } catch (error) {
-    logger.error("addUser() has error" + error);
-    return;
-  }
+  const msg = await USERSERVICE.register(req.body);
+  res.send(msg);
 };
 
 const login = async (req, res) => {
@@ -83,17 +62,8 @@ const login = async (req, res) => {
                 }
     } 
    */
-  try {
-    const msg = await USERSERVICE.login(req.body);
-    if (!msg) {
-      logger.error(`addUser(): There is no msg data. `);
-      return;
-    }
-    res.send({ msg });
-  } catch (error) {
-    logger.error("login() has error" + error);
-    return;
-  }
+  const msg = await USERSERVICE.login(req.body);
+  res.send(msg);
 };
 
-module.exports = { getAllUsersController, addUser, login };
+module.exports = { getAllUsersController, register, login };

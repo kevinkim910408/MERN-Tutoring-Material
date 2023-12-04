@@ -26,13 +26,10 @@
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Welcome"
-        ],
-        "description": "This is just a simple welcome Sentence",
+        "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -50,7 +47,7 @@
         }
       }
     },
-    "/api/user/addUser": {
+    "/api/user/register": {
       "post": {
         "tags": [
           "Users"
@@ -105,7 +102,69 @@
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "There is no payload on addUser() in user repository. "
+                  "example": "There is no payload on register() in user repository. "
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Login API",
+        "parameters": [
+          {
+            "name": "",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "kevin@email.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "password"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "If Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Success!."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "If one of payload is empty",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "There is no payload on login() in user repository. "
                 }
               },
               "xml": {

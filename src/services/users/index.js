@@ -1,38 +1,18 @@
 const USERDB = require("../../repositories/users");
-const { logger } = require("../../configs/winston");
 
 const getAllUsers = async () => {
-  try {
-    const users = await USERDB.getAllUsers();
-    if (!users) {
-      logger.error("getAllUsers(): There is no users data. ");
-      return;
-    }
-    return users;
-  } catch (error) {
-    logger.error("getAllUsers() has error" + error);
-    return;
-  }
+  const users = await USERDB.getAllUsers();
+  return users;
 };
 
-const addUser = async (body) => {
-  try {
-    const msg = await USERDB.addUser(body);
-    return msg;
-  } catch (error) {
-    logger.error("addUser() has error" + error);
-    return;
-  }
+const register = async (body) => {
+  const msg = await USERDB.register(body);
+  return msg;
 };
 
 const login = async (body) => {
-  try {
-    const msg = await USERDB.login(body);
-    return msg;
-  } catch (error) {
-    logger.error("login() has error" + error);
-    return;
-  }
+  const msg = await USERDB.login(body);
+  return msg;
 };
 
-module.exports = { getAllUsers, addUser, login };
+module.exports = { getAllUsers, register, login };

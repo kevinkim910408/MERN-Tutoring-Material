@@ -1,5 +1,6 @@
 const { User } = require("../../dtos/user");
 const { logger } = require("../../configs/winston");
+const { CustomException, getStatusCode } = require("../../configs/exceptions");
 const bcrypt = require("bcrypt");
 
 const getAllUsers = async () => {
@@ -7,47 +8,38 @@ const getAllUsers = async () => {
     const allUsers = await User.find({});
     if (!allUsers) {
       logger.error("getAllUsers(): There is no users data. ");
-      return;
+      return [];
     }
     return allUsers;
   } catch (error) {
     logger.error("getAllUsers() has error" + error);
-    return;
+    throw new CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 
-const addUser = async (payload) => {
+const register = async (payload) => {
   const { email, name, age, password } = payload;
   try {
     if (!email || !name || !age || !password) {
-      logger.error("There is no payload on addUser() in user repository");
-      logger.error(
-        "Email: " + email,
-        "Name: " + name,
-        "Age: " + age,
-        "Password: " + password
-      );
-      return "failed, Check Payload";
+      logger.error("Payload error on register() in user repository");
+      return CustomException(getStatusCode.BAD_REQUEST);
     }
 
     const foundUser = await User.findOne({ email });
 
     if (foundUser) {
-      logger.error(`addUser(): ${email} is already exists.`);
-      return "failed, Email is dupped";
+      logger.error(`register(): ${email} is already exists.`);
+      return CustomException(getStatusCode.DUPLICATE_ID);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
-
     const newUser = new User({ email, name, age, password: hashedPassword });
-
     await newUser.save();
 
-    return "success";
+    return CustomException(getStatusCode.CREATED);
   } catch (error) {
-    logger.error("addUser() has error" + error);
-    return;
+    logger.error("register() has error" + error);
+    throw new CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 
@@ -55,29 +47,26 @@ const login = async (payload) => {
   const { email, password } = payload;
   try {
     if (!email || !password) {
-      logger.error("There is no payload on addUser() in user repository");
-      logger.error("Email: " + email, "Password: " + password);
-      return "failed, Check Payload";
+      logger.error("Payload error on login() in user repository");
+      return CustomException(getStatusCode.BAD_REQUEST);
     }
 
     const foundUser = await User.findOne({ email });
-
     if (!foundUser) {
-      logger.error(`login(): ${email} is not found.`);
-      return "failed, not registered user";
+      logger.error(`login(): ${email} is not registered user.`);
+      return CustomException(getStatusCode.NOT_FOUND);
     }
-    const passwordMatch = await bcrypt.compare(password, foundUser.password);
 
+    const passwordMatch = await bcrypt.compare(password, foundUser.password);
     if (!passwordMatch) {
       logger.error(`login(): Password mismatch for ${email}.`);
-      return "failed, incorrect password";
+      return CustomException(getStatusCode.UNAUTHORIZED);
     }
-
-    return "success";
+    return CustomException(getStatusCode.OK);
   } catch (error) {
-    logger.error("addUser() has error" + error);
-    return;
+    logger.error("login() has error" + error);
+    throw new CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 
-module.exports = { getAllUsers, addUser, login };
+module.exports = { getAllUsers, register, login };
