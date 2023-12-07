@@ -13,7 +13,7 @@ const getAllUsers = async () => {
     return allUsers;
   } catch (error) {
     logger.error("getAllUsers() has error" + error);
-    throw new CustomException(getStatusCode.SERVER_ERROR);
+    return CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 
@@ -56,8 +56,8 @@ const login = async (payload) => {
       logger.error(`login(): ${email} is not registered user.`);
       return CustomException(getStatusCode.NOT_FOUND);
     }
-
     const passwordMatch = await bcrypt.compare(password, foundUser.password);
+
     if (!passwordMatch) {
       logger.error(`login(): Password mismatch for ${email}.`);
       return CustomException(getStatusCode.UNAUTHORIZED);
@@ -65,7 +65,7 @@ const login = async (payload) => {
     return CustomException(getStatusCode.OK);
   } catch (error) {
     logger.error("login() has error" + error);
-    throw new CustomException(getStatusCode.SERVER_ERROR);
+    return CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 

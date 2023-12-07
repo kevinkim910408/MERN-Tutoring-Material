@@ -26,10 +26,13 @@
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Welcome"
+        ],
+        "description": "This is just a simple welcome Sentence",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
           }
         }
       }
