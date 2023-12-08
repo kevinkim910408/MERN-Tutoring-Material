@@ -15,15 +15,21 @@ const register = async (body) => {
 
 const login = async (body) => {
   try {
-    const msg = await USERDB.login(body);
+    await USERDB.login(body);
 
     const payload = { msg: "THANK YOU" };
     const jwtSecret = process.env.JWT_SECRET || "SECRET_KEY_FOR_JWT";
 
     const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
 
-    console.log(accessToken);
-    return msg;
+    const saveTokenPayload = {
+      email: body.email,
+      token: accessToken,
+    };
+
+    const msg = await USERDB.saveToken(saveTokenPayload);
+
+    return { msg, accessToken };
   } catch (error) {
     logger.error("login() service: Creating JWT Error.", error);
     throw CustomException(getStatusCode.SERVER_ERROR);

@@ -62,8 +62,8 @@ const login = async (req, res) => {
                 }
     } 
    */
-  const msg = await USERSERVICE.login(req.body);
-  res.send(msg);
+  const data = await USERSERVICE.login(req.body);
+  res.send({ token: data.accessToken, status: data.msg });
 };
 
 module.exports = { getAllUsersController, register, login };

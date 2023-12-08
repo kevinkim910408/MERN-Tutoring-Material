@@ -13,17 +13,15 @@ const getAllUsers = async () => {
     return allUsers;
   } catch (error) {
     logger.error("getAllUsers() has error" + error);
-    return CustomException(getStatusCode.SERVER_ERROR);
+    throw new CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 
 const register = async (payload) => {
   const { email, name, age, password } = payload;
   try {
-    if (!email || !name || !age || !password) {
-      logger.error("Payload error on register() in user repository");
-      return CustomException(getStatusCode.BAD_REQUEST);
-    }
+    const requiredFields = ["email", "name", "age", "password"];
+    validatePayload(payload, requiredFields);
 
     const foundUser = await User.findOne({ email });
 
@@ -46,27 +44,60 @@ const register = async (payload) => {
 const login = async (payload) => {
   const { email, password } = payload;
   try {
-    if (!email || !password) {
-      logger.error("Payload error on login() in user repository");
-      return CustomException(getStatusCode.BAD_REQUEST);
-    }
+    const requiredFields = ["email", "password"];
+    validatePayload(payload, requiredFields);
 
-    const foundUser = await User.findOne({ email });
-    if (!foundUser) {
-      logger.error(`login(): ${email} is not registered user.`);
-      return CustomException(getStatusCode.NOT_FOUND);
-    }
+    const foundUser = await findUserByEmail(email);
+
     const passwordMatch = await bcrypt.compare(password, foundUser.password);
 
     if (!passwordMatch) {
       logger.error(`login(): Password mismatch for ${email}.`);
-      return CustomException(getStatusCode.UNAUTHORIZED);
+      throw new CustomException(getStatusCode.UNAUTHORIZED);
     }
     return CustomException(getStatusCode.OK);
   } catch (error) {
     logger.error("login() has error" + error);
-    return CustomException(getStatusCode.SERVER_ERROR);
+    throw new CustomException(getStatusCode.SERVER_ERROR);
   }
 };
 
-module.exports = { getAllUsers, register, login };
+const saveToken = async (payload) => {
+  const { email, token } = payload;
+
+  try {
+    const requiredFields = ["email", "token"];
+    validatePayload(payload, requiredFields);
+
+    await User.findOneAndUpdate(
+      { email: email },
+      { $set: { token } },
+      { new: true }
+    );
+    return CustomException(getStatusCode.OK);
+  } catch (error) {
+    logger.error("saveToken() has error" + error);
+    throw new CustomException(getStatusCode.SERVER_ERROR);
+  }
+};
+
+// internel uses
+const validatePayload = (payload, requiredFields) => {
+  for (const field of requiredFields) {
+    if (!payload[field]) {
+      logger.error(`Payload error: ${field} is missing.`);
+      throw new CustomException(getStatusCode.BAD_REQUEST);
+    }
+  }
+};
+
+const findUserByEmail = async (email) => {
+  const foundUser = await User.findOne({ email });
+  if (!foundUser) {
+    logger.error(`User not found for email: ${email}`);
+    throw new CustomException(getStatusCode.NOT_FOUND);
+  }
+  return foundUser;
+};
+
+module.exports = { getAllUsers, register, login, saveToken };
