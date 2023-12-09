@@ -1,16 +1,21 @@
 const express = require("express");
 const DBConnect = require("./src/configs/mongo");
 const indexRouter = require("./src/routers/index");
-const { logger } = require("./src/configs/winston");
+const { logger, error } = require("./src/configs/winston");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./src/configs/swagger-output.json");
-const { error } = require("winston");
+const cors = require("cors");
 
 const app = express();
 DBConnect();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use("/api", indexRouter);
 app.use(

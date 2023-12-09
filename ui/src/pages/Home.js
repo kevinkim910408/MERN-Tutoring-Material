@@ -1,8 +1,31 @@
 import React from "react";
 import styled from "styled-components";
 import CHARACTER from "../assets/recruitbg.svg";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+const getServerData = async () => {
+  const data = await fetch("http://localhost:8080/api/user/getAllUsers").then(
+    (response) => response.json()
+  );
+  return data;
+};
+
+const fetchData = async () => {
+  const response = await axios.get(
+    `http://localhost:8080/api/user/getAllUsers`
+  );
+  return response.data;
+};
 
 const Home = () => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["uniqueQueryKey"],
+    queryFn: fetchData,
+  });
+
+  console.log(data);
+
   return (
     <StyledPage>
       <StyledColorBox>
@@ -14,7 +37,7 @@ const Home = () => {
           <StyledInput placeholder="Rank" />
           <StyledInput placeholder="Crew Preference" />
           <StyledButton>Submit</StyledButton>
-          <CharacterImage imageUrl={CHARACTER} />
+          <CharacterImage img={CHARACTER} />
         </StyledOverlayText>
       </StyledColorBox>
     </StyledPage>
@@ -125,7 +148,7 @@ const CharacterImage = styled.div`
   bottom: 0;
   right: 0;
 
-  background-image: url(${(props) => props.imageUrl});
+  background-image: url(${(props) => props.img});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
