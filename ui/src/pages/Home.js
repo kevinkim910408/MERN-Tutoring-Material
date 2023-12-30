@@ -1,7 +1,5 @@
 import React from "react";
 import CHARACTER from "../assets/recruitbg.svg";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import {
   StyledPage,
   StyledColorBox,
@@ -10,28 +8,12 @@ import {
   CharacterImage,
   StyledButton,
 } from "./style";
-
-const getServerData = async () => {
-  const data = await fetch("http://localhost:8080/api/user/getAllUsers").then(
-    (response) => response.json()
-  );
-  return data;
-};
-
-const fetchData = async () => {
-  const response = await axios.get(
-    `http://localhost:8080/api/user/getAllUsers`
-  );
-  return response.data;
-};
+import { useGetAllUsers } from "../api/hooks/fetchers";
 
 const Home = () => {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["uniqueQueryKey"],
-    queryFn: fetchData,
-  });
+  const getAllUserAPI = useGetAllUsers();
 
-  console.log(data);
+  console.log(getAllUserAPI?.data);
 
   return (
     <StyledPage>
