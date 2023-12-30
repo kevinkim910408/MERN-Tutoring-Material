@@ -1,4 +1,5 @@
 import axios from "axios";
+import { cookie } from "../data/cookie";
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
@@ -9,6 +10,8 @@ const onRequest = (data) => {
   if (process.env.REACT_APP_SERVER_URL === process.env.REACT_APP_LOCAL_URL) {
     console.log(`🛫 [API - REQUEST] ${method?.toUpperCase()} ${url}`);
   }
+  const token = cookie.get("Authorization");
+  headers.Authorization = token;
   return data;
 };
 

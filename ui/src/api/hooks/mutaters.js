@@ -13,3 +13,16 @@ export const usePostRegister = () => {
     onError: () => {},
   });
 };
+
+const __login = async (payload) => {
+  const login = await API.postLogin(payload);
+  return login;
+};
+
+export const usePostLogin = () => {
+  return useMutation({
+    mutationFn: __login,
+    onSuccess: () => {},
+    onError: () => {},
+  });
+};
